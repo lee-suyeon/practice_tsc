@@ -2,7 +2,21 @@ interface IView {
   render(): void;
   bindClickNumber(handler: (input: string) => void): void;
   clickNumber(input: string): void;
+  bindClickOperator(handler: (input: string) => void): void;
+  clickOperator(operator: string): void;
 }
+
+export interface OperatorType {
+  [key: string]: string;
+}
+
+export const OperatorCode = {
+  addition: "+",
+  subtraction: "-",
+  mulitplication: "x",
+  division: "/",
+  equal: "="
+} as const;
 
 class View implements IView {
   private app: HTMLDivElement;
@@ -28,15 +42,18 @@ class View implements IView {
       )
     })
 
-    let operators: Array<string> = ["+", "-", "x", "/", "="];
     let operator = 
-    operators.map((v) => {
+    (Object.keys(OperatorCode) as ['Addition', 'Subtraction', 'Mulitplication', 'Division', 'Equal']).map((v) => {
       return (
-        `<li class="operator">${v}</li>`
+        `<li class="operator" data-set=${v}>${OperatorCode[v]}</li>`
       )}
     )
     this.numbers.innerHTML = number.join("\n")
     this.operators.innerHTML = operator.join("\n");
+    let back = document.createElement('li');
+    back.classList.add("number");
+    back.innerText = "⬅️"
+    this.numbers.appendChild(back);
   }
 
   bindClickNumber(handler: (input: string) => void) {
@@ -52,6 +69,25 @@ class View implements IView {
 
   clickNumber(input: string) {
     this.result.innerHTML = input;
+  }
+
+  bindClickOperator(handler: (input: string) => void) {
+    this.keyPad.addEventListener('click', (event) => {
+      let target = event.target as HTMLElement;
+      if(target.className !== "operator") return;
+      let operator = target.closest('.operator')
+      if(operator) {
+        handler(operator.dataset.set)
+      }
+    })
+  }
+
+  clickOperator(operator: string) {
+    this.result.innerHTML = operator;
+  }
+
+  renderResult(expression: number | string) {
+    this.result.innerHTML = `${expression}`;
   }
 }
 

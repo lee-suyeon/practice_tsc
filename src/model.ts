@@ -1,33 +1,75 @@
-interface IModel {
-  
-  clickNumber(input: string, callback: (input: string) => void): void;
-}
+import { OperatorCode, OperatorType } from './view';
 
-class Model implements IModel{
-  private _input: string = "";
+class Model {
+  private firstInput: string = "";
+  private secondInput: string = "";
+  private operator: string = "";
+  private _expression: string = "";
 
-  get input() {
-    return this._input;
+  get expression() {
+    return this._expression;
   }
 
-  set input (input: string) {
-    this._input += input;
+  set expression (expression: string) {
+    this._expression = expression;
   }
-
-  // private secondNumber: string;
-  // private operator: string;
-  // private result: number;
 
   constructor() {
-    this._input = "";
+    this.firstInput = "";
+    this.secondInput = "";
+    this.operator = "";
+    this._expression = "";
+  }
+
+  clickNumber(input: string, callback: (input: string) => void) {
+    if(!this.operator) { // 연산자가 없으면
+      this.firstInput += input; // 첫번째 input
+    } else { // 연산자가 있으면 
+      this.secondInput += input; // 두번째 인풋
+    }
+    this._expression = this.firstInput + this.operator + this.secondInput;
+    if(callback) {
+      callback(this._expression)
+    } 
+  }
+
+  addition(a: string, b: string): string {
+    let result = Number(a) + Number(b);
+    return result.toString()
+  }
+
+  subtraction(a: string, b: string): string {
+    let result = Number(a) - Number(b);
+    return result.toString()
   }
   
-  clickNumber(input: string, callback: (input: string) => void) {
-    this._input += input;
+  mulitplication(a: string, b: string): string {
+    let result = Number(a) * Number(b);
+    return result.toString()
+  }
+  
+  division(a: string, b: string): string {
+    let result = Number(a) / Number(b);
+    return result.toFixed(5).toString();
+  }
 
+  clickOperator(operator: string, callback: (input: string) => void) {
+    let operatorObj: OperatorType = OperatorCode;
+    if(operator == 'equal') {
+      let result = Object.keys(OperatorCode).find(k => {
+        return OperatorCode[k] === this.operator;
+      })
+      this._expression = this[result](this.firstInput, this.secondInput);    
+      this.firstInput = this._expression;
+      this.secondInput = "";
+      this.operator = "";
+    } else {
+      this.operator = operatorObj[operator];
+      this._expression = this.firstInput + this.operator;
+    }
     if(callback) {
-      callback(this._input)
-    } 
+      callback(this._expression)
+    }
   }
 }
 

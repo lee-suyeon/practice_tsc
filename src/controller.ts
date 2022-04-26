@@ -1,11 +1,7 @@
 import Model from "./model";
 import View from "./view";
 
-interface IController {
-  clickNumber: (input: string) => void;
-}
-
-class Controller implements IController {
+class Controller {
   private view: View;
   private model: Model;
 
@@ -14,10 +10,15 @@ class Controller implements IController {
     this.model = model;
     view.render()
     view.bindClickNumber(this.clickNumber.bind(this))
+    view.bindClickOperator(this.clickOperator.bind(this))
   }
 
   clickNumber(input: string) {
-    this.model.clickNumber(input, () => this.view.clickNumber(this.model.input));
+    this.model.clickNumber(input, () => this.view.renderResult(this.model.expression));
+  }
+
+  clickOperator(operator: string) {
+    this.model.clickOperator(operator, () => this.view.renderResult(this.model.expression));
   }
 }
 
