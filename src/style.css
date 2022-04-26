@@ -17,7 +17,10 @@
   height: 100px;
   margin-bottom: 1rem;
   color: white;
-  font-size: 1.2rem;
+  font-size: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .key-pad {
@@ -40,6 +43,59 @@
   line-height: 50px;
   font-size: 1.5rem;
   color: white;
+}
+
+.number:nth-child(10) {
+	width: 100%;
+  border-radius: 25px;
+	grid-column-start: 1;
+	grid-column-end: 3;
+}
+
+
+.number:nth-child(1) {
+  order: 3;
+}
+
+.number:nth-child(2) {
+  order: 2;
+}
+
+.number:nth-child(3) {
+  order: 1;
+}
+
+.number:nth-child(4) {
+  order: 6;
+}
+
+.number:nth-child(5) {
+  order: 5;
+}
+
+.number:nth-child(6) {
+  order: 4;
+}
+
+.number:nth-child(7) {
+  order: 9;
+}
+
+.number:nth-child(8) {
+  order: 8;
+}
+
+.number:nth-child(9) {
+  order: 7;
+}
+
+.number:nth-child(10) {
+  order: 10;
+}
+
+.number:nth-child(11) {
+  order: 11;
+  line-height: 55px;
 }
 
 .operator {
