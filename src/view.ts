@@ -1,11 +1,3 @@
-interface IView {
-  render(): void;
-  bindClickNumber(handler: (input: string) => void): void;
-  clickNumber(input: string): void;
-  bindClickOperator(handler: (input: string) => void): void;
-  clickOperator(operator: string): void;
-}
-
 export interface OperatorType {
   [key: string]: string;
 }
@@ -13,81 +5,114 @@ export interface OperatorType {
 export const OperatorCode = {
   addition: "+",
   subtraction: "-",
-  mulitplication: "x",
+  mulitplication: "×",
   division: "/",
   equal: "="
 } as const;
 
-class View implements IView {
+class View {
   private app: HTMLDivElement;
   private result: HTMLDivElement;
-  private keyPad: HTMLDivElement;
   private numbers: HTMLElement;
   private operators: HTMLUListElement;
 
   constructor() {
-    this.app = document.getElementById('#app') as HTMLDivElement;
+    this.app = document.getElementById('app') as HTMLDivElement;
     this.result = document.querySelector('.result') as HTMLDivElement;
-    this.keyPad = document.querySelector(".key-pad") as HTMLDivElement;
     this.numbers = document.querySelector(".numbers") as HTMLUListElement;
     this.operators = document.querySelector(".operators") as HTMLUListElement;
   }
 
   render() {
-    let numbers: Array<number> = Array(10).fill(null).map((v, i) => i);
+    let numbers: Array<number | string> = ['.', 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ];
     let number = 
     numbers.reverse().map(n => {
       return(
-        `<li class="number" data-set=${n}>${n}</li>`
+        `<li class="number">${n}</li>`
       )
     })
 
+    let operatorObj: OperatorType = OperatorCode;
     let operator = 
     (Object.keys(OperatorCode) as ['Addition', 'Subtraction', 'Mulitplication', 'Division', 'Equal']).map((v) => {
       return (
-        `<li class="operator" data-set=${v}>${OperatorCode[v]}</li>`
+        `<li class="operator ${v}" data-set=${v}>${operatorObj[v]}</li>`
       )}
     )
     this.numbers.innerHTML = number.join("\n")
     this.operators.innerHTML = operator.join("\n");
+
+    let allClear = document.createElement('li');
+    allClear.classList.add("all-clear");
+    allClear.innerText = "AC"
+    this.numbers.prepend(allClear);
+
     let back = document.createElement('li');
-    back.classList.add("number");
-    back.innerText = "⬅️"
+    back.classList.add("delete");
+    back.innerText = "CE"
     this.numbers.appendChild(back);
   }
 
   bindClickNumber(handler: (input: string) => void) {
-    this.keyPad.addEventListener('click', (event) => {
+    this.app.addEventListener('click', (event) => {
       let target = event.target as HTMLElement;
       if(target.className !== "number") return;
       let number = target.closest('.number')
       if(number) {
-        handler(number.dataset.set)
+        handler(number.innerHTML)
       }
     })
-  }
+  } 
 
-  clickNumber(input: string) {
-    this.result.innerHTML = input;
+  bindClickEqualOperator(handler: () => void) {
+    this.app.addEventListener('click', (event) => {
+      let target = event.target as HTMLElement;
+      if(!target.className.includes("equal")) return;
+      let equal = target.closest('.equal');
+      if(equal) {
+        handler()
+      }
+    })
   }
 
   bindClickOperator(handler: (input: string) => void) {
-    this.keyPad.addEventListener('click', (event) => {
+    this.app.addEventListener('click', (event) => {
       let target = event.target as HTMLElement;
-      if(target.className !== "operator") return;
-      let operator = target.closest('.operator')
+      if(!target.className.includes("operator")) return;
+      let operator = target.closest('.operator') as HTMLElement;
       if(operator) {
-        handler(operator.dataset.set)
+        handler(operator.dataset.set!)
       }
     })
   }
 
-  clickOperator(operator: string) {
-    this.result.innerHTML = operator;
+  renderResult(display: string | number) {
+    if(display.toString().length > 15) {
+      this.result.classList.add("small");
+    }
+    this.result.innerHTML = `${display}`;
   }
 
-  renderResult(expression: number | string) {
-    this.result.innerHTML = `${expression}`;
+  bindClickAllClear(handler: () => void) {
+    this.app.addEventListener('click', (event) => {
+      let target = event.target as HTMLElement;
+      if(target.className !== "all-clear") return;
+      let allClear = target.closest('.all-clear');
+      if(allClear) {
+        handler()
+      }
+    })
+  }
+
+  bindDelete(handler: () => void) {
+    this.app.addEventListener('click', (event) => {
+      let target = event.target as HTMLElement;
+      if(target.className !== "delete") return;
+      let deleteBtn = target.closest('.delete');
+      if(deleteBtn) {
+        handler()
+      }
+    })
   }
 }
 

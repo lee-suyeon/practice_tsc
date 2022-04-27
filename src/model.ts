@@ -1,10 +1,8 @@
 import { OperatorCode, OperatorType } from './view';
 
 class Model {
-  private firstInput: string = "";
-  private secondInput: string = "";
-  private operator: string = "";
   private _expression: string = "";
+  private _result: number = 0;
 
   get expression() {
     return this._expression;
@@ -14,62 +12,56 @@ class Model {
     this._expression = expression;
   }
 
+  get result() {
+    return this._result;
+  }
+
+  set result (result: number) {
+    this._result = result;
+  }
+
   constructor() {
-    this.firstInput = "";
-    this.secondInput = "";
-    this.operator = "";
     this._expression = "";
+    this._result = 0; 
   }
 
   clickNumber(input: string, callback: (input: string) => void) {
-    if(!this.operator) { // 연산자가 없으면
-      this.firstInput += input; // 첫번째 input
-    } else { // 연산자가 있으면 
-      this.secondInput += input; // 두번째 인풋
-    }
-    this._expression = this.firstInput + this.operator + this.secondInput;
+    this.expression += input; 
     if(callback) {
-      callback(this._expression)
+      callback(this.expression)
     } 
-  }
-
-  addition(a: string, b: string): string {
-    let result = Number(a) + Number(b);
-    return result.toString()
-  }
-
-  subtraction(a: string, b: string): string {
-    let result = Number(a) - Number(b);
-    return result.toString()
-  }
-  
-  mulitplication(a: string, b: string): string {
-    let result = Number(a) * Number(b);
-    return result.toString()
-  }
-  
-  division(a: string, b: string): string {
-    let result = Number(a) / Number(b);
-    return result.toFixed(5).toString();
   }
 
   clickOperator(operator: string, callback: (input: string) => void) {
     let operatorObj: OperatorType = OperatorCode;
-    if(operator == 'equal') {
-      let result = Object.keys(OperatorCode).find(k => {
-        return OperatorCode[k] === this.operator;
-      })
-      this._expression = this[result](this.firstInput, this.secondInput);    
-      this.firstInput = this._expression;
-      this.secondInput = "";
-      this.operator = "";
-    } else {
-      this.operator = operatorObj[operator];
-      this._expression = this.firstInput + this.operator;
+    if(operator == 'equal') return;
+    if(Object.values(operatorObj).includes(this.expression[this.expression.length - 1])) {
+      let length = this.expression.length
+      this.expression = this.expression.slice(0, length - 1)
     }
+    this.expression += operatorObj[operator];
     if(callback) {
-      callback(this._expression)
+      callback(this.expression)
     }
+  }
+
+  clickEqualOperator(callback: (result: number) => void) {
+    this.result = eval(this.expression.replace('×', '*'));
+    this.expression = this.result.toString();
+    if(callback) {
+      callback(this.result);
+    }
+  }
+
+  clickAllClear(callback: (expression: string) => void) {
+    this.expression = "";
+    if(callback) callback(this.expression)
+  }
+
+  clickDelete(callback: (expression: string) => void) {
+    let length = this.expression.length
+    this.expression = this.expression.slice(0, length - 1)
+    if(callback) callback(this.expression)
   }
 }
 
