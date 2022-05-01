@@ -80,8 +80,10 @@ class View {
       let target = event.target as HTMLElement;
       if(!target.className.includes("operator")) return;
       let operator = target.closest('.operator') as HTMLElement;
+      let operatorObj: OperatorType = OperatorCode;
       if(operator) {
-        handler(operator.dataset.set!)
+        let dataset = operator.dataset.set!
+        handler(operatorObj[dataset])
       }
     })
   }

@@ -1,12 +1,8 @@
 import { OperatorCode, OperatorType } from './common';
+import { checkHasOperator, calculateExpression } from './service'; 
 
 class Model {
   private _expression: string = "";
-  private _result: number = 0;
-
-  private _firstNumber: string = "";
-  private _operator: string = "";
-  private _secondNumber: string = "";
 
   get expression() {
     return this._expression;
@@ -16,58 +12,38 @@ class Model {
     this._expression = expression;
   }
 
-  get result() {
-    return this._result;
-  }
-
-  set result (result: number) {
-    this._result = result;
-  }
-
-  get firstNumber() {
-    return this._firstNumber;
-  }
-
-  get operator() {
-    return this._firstNumber;
-  }
-
-  get secondNumber() {
-    return this._firstNumber;
-  }
-
   constructor() {
     this._expression = "";
-    this._result = 0; 
-    this._firstNumber = "";
-    // 연산자를 클릭했을 때 이미 연산자에 값이 존재할 경우 계산 하고 연산자 값 갱신 
-    this._operator = "";
-    this._secondNumber = "";
   }
 
-  // clickNumber(input: string, callback: (input: string) => void) {
-  //   let currentExpression: string = this.expression;
-  //   currentExpression += input;
-  //   this.expression = currentExpression;
-  //   if(callback) {
-  //     callback(this.expression)
-  //   } 
-  // }
-
-  clickNumber(input: string) {
-    if(!this._firstNumber) {
-      this._firstNumber += input;
+  clickNumber(input: string, render:(expression: string) => void): void {
+    if(checkHasOperator(this.expression)) {
+      this.expression += input;
+      let result = calculateExpression(this.expression);
+      this.expression = result.toString();
     } else {
-      this._secondNumber += input;
+      let currentExpression: string = this.expression;
+      currentExpression += input;
+      this.expression = currentExpression;
+    }
+    
+    if(render) {
+      render(this.expression)
     }
   }
 
-  clickOperator(operator: string) {
-    this._operator = operator;
-  }
-
-  makeExpression = () => {
-
+  // 연산자를 누르면 바로 계산
+  clickOperator(operator: string, render:(expression: string) => void): void {
+    this.expression += operator;
+    // if(!checkHasOperator(this.expression)) {
+    // } else {
+    //   let result = calculateExpression(this.expression);
+    //   this.expression = result.toString();
+    // }
+    
+    if(render) {
+      render(this.expression)
+    }
   }
 
   // clickOperator(operator: string, callback: (input: string) => void) {
@@ -89,11 +65,11 @@ class Model {
   // }
 
   clickEqualOperator(callback: (result: number) => void) {
-    this.result = eval(this.expression.replace('×', '*'));
-    this.expression = this.result.toString();
-    if(callback) {
-      callback(this.result);
-    }
+    // this.result = eval(this.expression.replace('×', '*'));
+    // this.expression = this.result.toString();
+    // if(callback) {
+    //   callback(this.result);
+    // }
   }
 
   clickAllClear(callback: (expression: string) => void) {
