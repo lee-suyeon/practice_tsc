@@ -1,4 +1,4 @@
-const regexp = /[+\\-×/]/;
+const regexp = /[+\×\-/]/;
 
 export function checkHasOperator(operator: string): boolean {
   let result = false;
@@ -6,28 +6,27 @@ export function checkHasOperator(operator: string): boolean {
   return result;
 }
 
-export function calculateExpression(expression: string): number {
+export function calculateExpression(expression: string): string {
   let result = 0;
-  const operator = expression.match(regexp)!;
-  const [ firstInput, secondInput ] = expression.split(regexp);
+  const matchOperator = expression.match(regexp);
+  const operator = matchOperator ? matchOperator[0] : null;
+  const [ firstInput, secondInput ] = expression.split(regexp).map(e => Number(e));
 
-  console.log("expression", expression)
-
-  switch (operator[0]) {
+  switch (operator) {
     case "+":
-      result = Number(firstInput) + Number(secondInput);
+      result = firstInput + secondInput;
       break;
     case "-":
-      result = Number(firstInput) - Number(secondInput);
+      result = firstInput - secondInput;
       break;
     case "×":
-      result = Number(firstInput) * Number(secondInput);
+      result = firstInput * secondInput;
       break;
     case "/":
-      result = Number(firstInput) / Number(secondInput);
+      result = firstInput / secondInput;
       break;
     default:
       break;
   }
-  return result;
+  return result.toString();
 }

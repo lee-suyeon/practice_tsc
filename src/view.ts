@@ -83,11 +83,16 @@ class View {
     
   }
 
-  renderResult(display: string | number | string[]) {
-    if(display.toString().length > 15) {
+  renderResult(display: string) {
+    let length = display.length;
+    let result = display;
+    if(length === 0) {
+      result = "0";
+    }
+    if(length > 20) {
       this.result.classList.add("small");
     }
-    this.result.innerHTML = `${display}`;
+    this.result.innerHTML = `${result}`;
   }
 
   bindClickAllClear(handler: () => void) {

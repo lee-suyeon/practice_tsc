@@ -26,7 +26,7 @@ class Controller {
 
   clickOperator(operator: string): void {
     if(operator === "=") {
-      let result:number = calculateExpression(this.model.expression)
+      let result:string = calculateExpression(this.model.expression)
       this.view.renderResult(result);
       this.model.firstInput = result.toString();
       this.model.secondInput = "";
@@ -42,7 +42,12 @@ class Controller {
   }
 
   clickDeleteButton(): void {
-    this.model.clickDelete(() => this.view.renderResult(this.model.expression))
+    if(!checkHasOperator(this.model.operator)) {
+      this.model.clickDelete(() => this.view.renderResult(this.model.firstInput))
+    } else {
+      this.model.clickDelete(() => this.view.renderResult(this.model.secondInput))
+    }
+    
   }
 }
 
