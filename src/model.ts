@@ -1,8 +1,8 @@
-import { OperatorCode, OperatorType } from './common';
-import { checkHasOperator, calculateExpression } from './service'; 
-
 class Model {
-  private _expression: string = "";
+  private _expression: string;
+  private _firstInput: string;
+  private _secondInput: string;
+  private _operator: string;
 
   get expression() {
     return this._expression;
@@ -12,71 +12,76 @@ class Model {
     this._expression = expression;
   }
 
+  get firstInput() {
+    return this._firstInput;
+  }
+
+  set firstInput(input: string) {
+    this._firstInput = input;
+  }
+
+  get secondInput() {
+    return this._secondInput;
+  }
+
+  set secondInput(input: string) {
+    this._secondInput = input;
+  }
+
+  get operator() {
+    return this._operator;
+  }
+
+  set operator(operator: string) {
+    this._operator = operator;
+  }
+
   constructor() {
     this._expression = "";
+    this._firstInput = "";
+    this._secondInput = "";
+    this._operator = "";
+  }
+
+  makeExpression = (): void => {
+    this.expression = this.firstInput + this.operator + this.secondInput;
   }
 
   clickNumber(input: string, render:(expression: string) => void): void {
-    if(checkHasOperator(this.expression)) {
-      this.expression += input;
-      let result = calculateExpression(this.expression);
-      this.expression = result.toString();
+    if(!this._operator) {
+      this._firstInput += input;
+      render(this.firstInput);
     } else {
-      let currentExpression: string = this.expression;
-      currentExpression += input;
-      this.expression = currentExpression;
+      this._secondInput += input;
+      render(this.secondInput);
     }
-    
-    if(render) {
-      render(this.expression)
-    }
+    this.makeExpression();
   }
 
-  // 연산자를 누르면 바로 계산
-  clickOperator(operator: string, render:(expression: string) => void): void {
-    this.expression += operator;
-    // if(!checkHasOperator(this.expression)) {
-    // } else {
-    //   let result = calculateExpression(this.expression);
-    //   this.expression = result.toString();
-    // }
-    
-    if(render) {
-      render(this.expression)
-    }
-  }
-
-  // clickOperator(operator: string, callback: (input: string) => void) {
-  //   let operatorObj: OperatorType = OperatorCode;
-
-  //   if(operator == 'equal') return; // clickEqualOperator 실행
-
-  //   // 연산자를 클릭하면 
-  //   // string -> 배열 길이가 3개인지 체크해서 바로 계산 ?
-
-  //   if(Object.values(operatorObj).includes(this.expression[this.expression.length - 1])) {
-  //     let length = this.expression.length
-  //     this.expression = this.expression.slice(0, length - 1)
-  //   }
-  //   this.expression += operatorObj[operator];
-  //   if(callback) {
-  //     callback(this.expression)
-  //   }
-  // }
-
-  clickEqualOperator(callback: (result: number) => void) {
-    // this.result = eval(this.expression.replace('×', '*'));
-    // this.expression = this.result.toString();
-    // if(callback) {
-    //   callback(this.result);
-    // }
+  clickOperator(operator: string): void {
+    this._operator = operator;
+    this.makeExpression();
   }
 
   clickAllClear(callback: (expression: string) => void) {
     this.expression = "";
+    this._firstInput = "";
+    this._operator = "";
+    this._secondInput = "";
     if(callback) callback(this.expression)
   }
 
+  // clickDelete(render: (expression: string) => void) {
+  //   console.log('this', this.expression)
+  //   // if(this.secondInput) {
+  //   //   this.secondInput = this.secondInput.slice(0, this.secondInput.length - 1)
+  //   //   render(this.secondInput);
+  //   // } else {
+  //   //   this.firstInput = this.firstInput.slice(0, this.firstInput.length - 1);
+  //   //   render(this.firstInput);
+  //   // }
+  //   this.makeExpression()
+  // }
   clickDelete(callback: (expression: string) => void) {
     let length = this.expression.length
     this.expression = this.expression.slice(0, length - 1)

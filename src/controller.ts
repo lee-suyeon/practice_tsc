@@ -12,24 +12,30 @@ class Controller {
     this.view.render();
     this.view.bindClickNumber(this.clickNumber.bind(this))
     this.view.bindClickOperator(this.clickOperator.bind(this))
-    // this.view.bindClickEqualOperator(this.clickEqualOperator.bind(this))
     this.view.bindClickAllClear(this.clickAllClear.bind(this))
     this.view.bindDelete(this.clickDeleteButton.bind(this))
   }
 
   clickNumber(input: string): void {
-    this.model.clickNumber(input, () => this.view.renderResult(this.model.expression));
+    if(!checkHasOperator(this.model.operator)) {
+      this.model.clickNumber(input, () => this.view.renderResult(this.model.firstInput));
+    } else {
+      this.model.clickNumber(input, () => this.view.renderResult(this.model.secondInput));
+    }
   }
 
   clickOperator(operator: string): void {
-    this.model.clickOperator(operator, () => this.view.renderResult(this.model.expression));
+    if(operator === "=") {
+      let result:number = calculateExpression(this.model.expression)
+      this.view.renderResult(result);
+      this.model.firstInput = result.toString();
+      this.model.secondInput = "";
+      this.model.expression = this.model.firstInput;
+      this.model.operator = "";
+    } else {
+      this.model.clickOperator(operator);
+    }
   }
-
-  // clickEqualOperator(): void {
-  //   let result:string = calculateExpression(this.model.expression)
-  //   this.view.renderResult(result);
-  //   // this.model.clickEqualOperator(() => this.view.renderResult(this.model.result))
-  // }
 
   clickAllClear(): void {
     this.model.clickAllClear(() => this.view.renderResult(this.model.expression))

@@ -1,14 +1,5 @@
-export interface OperatorType {
-  [key: string]: string;
-}
-
-export const OperatorCode = {
-  addition: "+",
-  subtraction: "-",
-  mulitplication: "×",
-  division: "/",
-  equal: "="
-} as const;
+import { OperatorCode, OperatorType } from './common';
+import { addEvent } from './helper';
 
 class View {
   private app: HTMLDivElement;
@@ -51,44 +42,48 @@ class View {
     back.classList.add("delete");
     back.innerText = "CE"
     this.numbers.appendChild(back);
+
+    this.result.innerText = "0"
   }
 
   bindClickNumber(handler: (input: string) => void) {
-    this.app.addEventListener('click', (event) => {
-      let target = event.target as HTMLElement;
-      if(target.className !== "number") return;
-      let number = target.closest('.number')
+    addEvent(this.app, 'click', ({ target }) => {
+      this.toggleSelectedOperator();
+      const number = target.closest('.number');
       if(number) {
-        handler(number.innerHTML)
+        handler(number.innerHTML);
       }
     })
   } 
 
-  bindClickEqualOperator(handler: () => void) {
-    this.app.addEventListener('click', (event) => {
-      let target = event.target as HTMLElement;
-      if(!target.className.includes("equal")) return;
-      let equal = target.closest('.equal');
-      if(equal) {
-        handler()
-      }
-    })
-  }
-
   bindClickOperator(handler: (input: string) => void) {
-    this.app.addEventListener('click', (event) => {
-      let target = event.target as HTMLElement;
-      if(!target.className.includes("operator")) return;
-      let operator = target.closest('.operator') as HTMLElement;
-      let operatorObj: OperatorType = OperatorCode;
+    addEvent(this.app, 'click', ({ target }) => {
+      const operator = target.closest('.operator')
+      const operatorObj: OperatorType = OperatorCode;
       if(operator) {
-        let dataset = operator.dataset.set!
-        handler(operatorObj[dataset])
+        const dataset = operator.dataset.set!
+        this.toggleSelectedOperator(dataset);
+        handler(operatorObj[dataset]);
       }
     })
   }
 
-  renderResult(display: string | number) {
+  toggleSelectedOperator(operator?: string) {
+    if(operator && operator !== "equal") {
+      const selected = this.operators.querySelector(`[data-set="${operator}"]`); // 선택한 연산자
+      if (!selected) {
+        return;
+      }
+      selected.classList.add('selected');
+    } else {
+      this.operators.querySelectorAll("li.selected").forEach(li => {
+        li.classList.remove('selected');
+      })
+    }
+    
+  }
+
+  renderResult(display: string | number | string[]) {
     if(display.toString().length > 15) {
       this.result.classList.add("small");
     }
@@ -96,10 +91,8 @@ class View {
   }
 
   bindClickAllClear(handler: () => void) {
-    this.app.addEventListener('click', (event) => {
-      let target = event.target as HTMLElement;
-      if(target.className !== "all-clear") return;
-      let allClear = target.closest('.all-clear');
+    addEvent(this.app, 'click', ({ target }) => {
+      const allClear = target.closest('.all-clear');
       if(allClear) {
         handler()
       }
@@ -107,12 +100,10 @@ class View {
   }
 
   bindDelete(handler: () => void) {
-    this.app.addEventListener('click', (event) => {
-      let target = event.target as HTMLElement;
-      if(target.className !== "delete") return;
-      let deleteBtn = target.closest('.delete');
+    addEvent(this.app, 'click',  ({ target}) => {
+      const deleteBtn = target.closest('.delete');
       if(deleteBtn) {
-        handler()
+        handler();
       }
     })
   }

@@ -52,10 +52,18 @@
   box-sizing: border-box;
 }
 
+.key-pad li:active {
+  background-color: #4c4f69;
+}
+
 li.all-clear {
   width: 100%;
 	grid-column-start: 1;
 	grid-column-end: 3;
+}
+
+.operator.selected {
+  background-color: #4c4f69;
 }
 
 .number:nth-child(1) {
